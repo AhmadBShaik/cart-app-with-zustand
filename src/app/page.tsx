@@ -55,7 +55,7 @@ export default function Home() {
       <h1 className="text-3xl text-center text-green-600 font-bold">Products</h1>
       {response.isLoading ? <div>Loading...</div> :
         <React.Fragment>
-          <ul className="grid grid-cols-2 px-5 gap-4">
+          <ul className="grid grid-cols-2 gap-4">
             {
               response.data
                 ?.data
