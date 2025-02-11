@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const per_page = ((perPage) && !isNaN(perPage)) ? perPage : 5
   const total_pages = Math.ceil(products.length / per_page)
 
-  const res = {
+  const response = {
     status: "success",
     message: "Grocery products retrieved successfully",
     data: {
@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
       }
     }
   }
-  const data = res
 
-  return Response.json({ data })
+  return Response.json(response)
 }
