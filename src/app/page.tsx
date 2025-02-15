@@ -42,7 +42,7 @@ export default function Home() {
 
   }
   const handleSelectedPerPageOption = (e: React.ChangeEvent<HTMLSelectElement>): void => {
-    router.push(`/?current_page=${current_page + 1}&per_page=${e.target.value}`)
+    router.push(`/?current_page=1&per_page=${e.target.value}`)
 
   }
   const cartStore = useCartBoundStore()
