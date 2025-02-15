@@ -5,16 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from 'axios'
 import Image from "next/image";
 import React, { useState } from "react";
+import { IProduct } from "@/types/product";
+import { useCartBoundStore } from "@/providers/CartStoreProvider";
+import { AddToCart, Cart, RemoveFromCart } from "@/icons";
 
-interface IProduct {
-  "id": string;
-  "name": string;
-  "price": number;
-  "rating": number;
-  "image": string;
-  "created_at": string;
-  "updated_at": string;
-}
+
 export default function Home() {
 
   const searchParams = useSearchParams()
@@ -50,9 +45,15 @@ export default function Home() {
     router.push(`/?current_page=${current_page + 1}&per_page=${e.target.value}`)
 
   }
+  const cartStore = useCartBoundStore()
+
   return (
-    <div className="mt-10 space-y-5 max-w-xl mx-auto">
+    <div className="mt-10 space-y-5 max-w-xl mx-auto px-5">
       <h1 className="text-3xl text-center text-green-600 font-bold">Products</h1>
+      <div className="flex justify-end">
+        <div className="relative inline-block"><Cart className="size-10" /> <div className="text-sm bg-green-500 text-white rounded px-0.5 absolute -top-2 right-0 min-w-4 text-center">{cartStore.products.length}</div></div>
+
+      </div>
       {response.isLoading ? <div>Loading...</div> :
         <React.Fragment>
           <ul className="grid grid-cols-2 gap-4">
@@ -61,14 +62,25 @@ export default function Home() {
                 ?.data
                 ?.data
                 .products
-                .map((product: IProduct) =>
-                  <li key={product.id} className="border p-3">
+                .map((product: IProduct) => {
+                  const isAdded = cartStore.products.find(existingProduct => existingProduct.id === product.id)
+                  return <li key={product.id} className="border p-3 space-y-3 relative">
+                    {
+                      !isAdded ?
+                        <AddToCart className="absolute right-2.5 top-2.5 z-10 cursor-pointer size-8" onClick={() => {
+                          cartStore.addProduct(product)
+                        }} />
+                        : <RemoveFromCart className="absolute right-2.5 top-2.5 z-10 cursor-pointer size-8" onClick={() => {
+                          cartStore.removeProduct(product.id)
+                        }} />}
+
                     <div className="aspect-square relative">
                       <Image src={product.image} alt={`picture of ${product.name}`} fill />
 
                     </div>
-                    <h3 className="font-medium">{product.name}</h3>
-                  </li>)
+                    <h3 className="font-bold">{product.name}</h3>
+                  </li>
+                })
             }
           </ul>
           <div className="pt-5 flex flex-col md:flex-row gap-5 justify-between items-center">
