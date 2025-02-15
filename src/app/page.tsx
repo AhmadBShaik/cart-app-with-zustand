@@ -7,7 +7,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { IProduct } from "@/types/product";
 import { useCartBoundStore } from "@/providers/CartStoreProvider";
-import { AddToCart, Cart, RemoveFromCart } from "@/icons";
+import { AddToCart, Basket, Cart, RemoveFromCart } from "@/icons";
 
 
 export default function Home() {
@@ -65,20 +65,22 @@ export default function Home() {
                 .map((product: IProduct) => {
                   const isAdded = cartStore.products.find(existingProduct => existingProduct.id === product.id)
                   return <li key={product.id} className="border p-3 space-y-3 relative">
-                    {
-                      !isAdded ?
-                        <AddToCart className="absolute right-2.5 top-2.5 z-10 cursor-pointer size-8" onClick={() => {
-                          cartStore.addProduct(product)
-                        }} />
-                        : <RemoveFromCart className="absolute right-2.5 top-2.5 z-10 cursor-pointer size-8" onClick={() => {
-                          cartStore.removeProduct(product.id)
-                        }} />}
 
                     <div className="aspect-square relative">
                       <Image src={product.image} alt={`picture of ${product.name}`} fill />
-
                     </div>
-                    <h3 className="font-bold">{product.name}</h3>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h2 className="font-bold text-gray-600">{product.name}</h2>
+                        <div className="font-bold">${product.price}</div>
+                      </div>
+                      <div className={`rounded-full p-1.5 flex items-center justify-center cursor-pointer ${!!isAdded ? 'bg-green-600' : 'bg-gray-200'}`} onClick={() => {
+                        !isAdded ? cartStore.addProduct(product)
+                          : cartStore.removeProduct(product.id)
+                      }} >
+                        <Basket isSelected={!!isAdded} width={20} height={20} />
+                      </div>
+                    </div>
                   </li>
                 })
             }
@@ -108,11 +110,8 @@ export default function Home() {
                 Next
               </button>
             </div>
-
           </div>
         </React.Fragment>
-
-
       }
     </div>
   );
