@@ -49,7 +49,7 @@ export default function ProductListing() {
   const cartStore = useCartBoundStore()
 
   return (
-    <div className="mt-10 space-y-5 max-w-xl mx-auto px-5">
+    <div className="my-10 space-y-5 max-w-xl mx-auto px-5">
       <h1 className="text-3xl text-center text-green-600 font-bold">Products</h1>
       <div className="flex justify-end">
         <Link href={'/cart'} className="relative inline-block"><Cart className="size-10" /> <div className="text-sm bg-green-500 text-white rounded px-0.5 absolute -top-2 right-0 min-w-4 text-center">{cartStore.products.length}</div></Link>

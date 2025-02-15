@@ -11,7 +11,7 @@ import { CrossRounded } from "@/icons/CrossRounded";
 export default function CartListing() {
   const cartStore = useCartBoundStore()
   return (
-    <div className="mt-10 space-y-5 max-w-xl mx-auto px-5">
+    <div className="my-10 space-y-5 max-w-xl mx-auto px-5">
       <h1 className="text-3xl text-center text-green-600 font-bold">Cart</h1>
       {cartStore.products.length ?
         <div className="flex justify-end">
