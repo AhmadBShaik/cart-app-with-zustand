@@ -1,9 +1,11 @@
-'use client'
+"use client";
 
-import { IProduct } from "@/types/product"
-import { createContext, useContext } from "react";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { IProduct } from "@/types/product";
+import { createContext, useContext, useRef } from "react";
+import { createStore } from "zustand";
+import { persist, subscribeWithSelector } from "zustand/middleware";
+import { share, isSupported } from "shared-zustand";
+import { useStore as useZustandStore } from "zustand";
 
 interface CartStore {
   products: Array<IProduct>;
@@ -11,30 +13,42 @@ interface CartStore {
   removeProduct: (productId: string) => void;
 }
 
-const useCartStore = create<CartStore>()(persist((set) => ({
-  products: [],
-  addProduct: (product) => set((state) => ({ products: [product, ...state.products] })),
-  removeProduct: (productId) => set((state) => ({ products: state.products.filter(product => product.id !== productId) }))
-}), {
-  name: 'cart-store'
-}))
+const useCartStore = createStore<CartStore>()(
+  subscribeWithSelector(persist((set) => ({
+    products: [],
+    addProduct: (product) =>
+      set((state) => ({ products: [product, ...state.products] })),
+    removeProduct: (productId) =>
+      set((state) => ({
+        products: state.products.filter((product) => product.id !== productId),
+      })),
+  }), {
+    name: 'cart-storage'
+  }))
+);
 
-const CartContext = createContext<ReturnType<typeof useCartStore> | null>(null)
-export const CartStoreProvider = ({ children }: { children: React.ReactNode }): React.JSX.Element => {
-  return <CartContext.Provider value={useCartStore()}>{children}</CartContext.Provider>
-}
+const CartContext = createContext<typeof useCartStore | null>(null);
+export const CartStoreProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.JSX.Element => {
+  const cartStore = useRef(useCartStore);
+  return (
+    <CartContext.Provider value={cartStore.current}>
+      {children}
+    </CartContext.Provider>
+  );
+};
 
 export const useCartBoundStore = (): CartStore => {
   const context = useContext(CartContext);
-  if (!context) throw new Error("useCartBoundStore must be used within CartStoreProvider")
-  return context as CartStore
-}
+  if (!context)
+    throw new Error("useCartBoundStore must be used within CartStoreProvider");
+  return useZustandStore(context);
+};
 
-if (typeof window !== 'undefined') {
-  window.addEventListener('storage', (event) => {
-    if (event.key === 'cart-storage') {
-      console.log('updating ....')
-      useCartStore.setState({ products: JSON.parse(event.newValue || '[]') });
-    }
-  });
+if ("BroadcastChannel" in globalThis || isSupported()) {
+  // share the property "products" of the cart state with other tabs
+  share("products", useCartStore);
 }
