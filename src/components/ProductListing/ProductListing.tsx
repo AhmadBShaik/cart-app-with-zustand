@@ -18,8 +18,8 @@ export default function ProductListing() {
 
   const currentPage = Number(searchParams.get('current_page'))
   const perPage = Number(searchParams.get('per_page'))
-  let current_page = !isNaN(currentPage) && currentPage !== 0 ? currentPage : 1
-  let per_page = !isNaN(perPage) && currentPage !== 0 ? perPage : 4
+  const current_page = !isNaN(currentPage) && currentPage !== 0 ? currentPage : 1
+  const per_page = !isNaN(perPage) && currentPage !== 0 ? perPage : 4
   const fetchProducts = async () => {
     const response = await axios.get(`/api/products?current_page=${current_page}&per_page=${per_page}`)
     return response
@@ -74,6 +74,7 @@ export default function ProductListing() {
                         <h2 className="font-bold text-gray-600">{product.name}</h2>
                         <div className="font-bold">${product.price}</div>
                       </div>
+                      {/* add / remove the product from the store */}
                       <div className={`rounded-full p-1.5 flex items-center justify-center cursor-pointer ${!!isAdded ? 'bg-green-600' : 'bg-gray-200'}`} onClick={() => {
                         !isAdded ? cartStore.addProduct(product)
                           : cartStore.removeProduct(product.id)
