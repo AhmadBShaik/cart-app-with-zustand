@@ -76,8 +76,11 @@ export default function ProductListing() {
                       </div>
                       {/* add / remove the product from the store */}
                       <div className={`rounded-full p-1.5 flex items-center justify-center cursor-pointer ${!!isAdded ? 'bg-green-600' : 'bg-gray-200'}`} onClick={() => {
-                        !isAdded ? cartStore.addProduct(product)
-                          : cartStore.removeProduct(product.id)
+                        if (!isAdded) {
+                          cartStore.addProduct(product)
+                        } else {
+                          cartStore.removeProduct(product.id)
+                        }
                       }} >
                         <Basket isSelected={!!isAdded} width={20} height={20} />
                       </div>

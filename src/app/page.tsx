@@ -1,6 +1,8 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ProductListing from "@/components/ProductListing";
 
 export default function Home() {
-  return <ProductListing />
+  return <Suspense>
+    <ProductListing />
+  </Suspense>
 }
